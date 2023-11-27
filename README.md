@@ -1,2 +1,2 @@
 # Met-Analysis
-This utilized public data for meteorology analysis.
+This code utilizes public data for meteorology analysis.
