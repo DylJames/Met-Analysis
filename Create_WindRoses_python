@@ -150,3 +150,126 @@ for month in range(len(Month_list)):
 
 
 
+
+import numpy as np
+import pandas as pd
+import csv
+from datetime import datetime
+import datetime
+from matplotlib import pyplot as plt
+
+
+namesofdata = ["ASJ","CTZ","DPL","GSB","HFF","ILM","IXA","RCZ","W40"]
+#RZZ not working
+for name in namesofdata:
+    Data = pd.read_csv("documents/Met_Names/" + name + ".csv")
+    ########################################
+    Speed = np.array(Data["sped"])
+    Direction = np.array(Data["drct"]) 
+    Time = np.array(Data["valid"]) 
+    A,B,C = 0,0,0
+    Speed_clean = []
+    Direction_clean = []
+    Time_clean = []
+    x = 0
+    y = 0
+
+    for line in range(len(Speed)):
+        try :
+            A = float(Speed[line].replace("'", ''))
+            B = float(Direction[line].replace("'", '')) 
+            C = str(Time[line])
+
+    #         Speed_clean.append(A)
+    #         Direction_clean.append(B)
+    #         Time_clean.append(C)
+        except:
+
+    #         print(Speed[line],Direction[line])
+            A = np.nan
+            B = np.nan
+            C = np.nan
+
+        if A > 3:
+            Speed_clean.append(A)
+            Direction_clean.append(B)
+            Time_clean.append(C)
+        else:
+            x = x + 1
+    print(x)
+
+    # for line in range(len(Speed)):
+
+    #     A = float(Speed[line].replace("'", ''))
+    #     B = float(Direction[line].replace("'", '')) 
+    #     Speed_clean.append(A)
+    #     Direction_clean.append(B)
+    #     Time_clean.append()
+
+    ###################################################
+    Days = [] 
+    Months = []
+    Year = []
+    Hour = []
+    Minutes = []
+    Uniqueday = []
+    for line in Time_clean:
+        dateobj = datetime.datetime.strptime(str(line), "%Y-%m-%d %H:%M")
+        Days.append(dateobj.day)
+        Months.append(dateobj.month)
+        Year.append(dateobj.year)
+        Hour.append(dateobj.hour)
+        Minutes.append(dateobj.minute)
+        Uniqueday.append(str(dateobj.day)+str(dateobj.year))
+
+    titles=['Speed_clean','Direction_clean','Time_clean','Days','Months','Year','Hour',"Minutes","Uniqueday"]
+    C=[Speed_clean,Direction_clean,Time_clean,Days,Months,Year,Hour,Minutes,Uniqueday]
+
+
+    Speed_clean=pd.DataFrame(Speed_clean)
+    Direction_clean=pd.DataFrame(Direction_clean)
+    Time_clean=pd.DataFrame(Time_clean)
+    Days=pd.DataFrame(Days)
+    Months=pd.DataFrame(Months)
+    Year=pd.DataFrame(Year)
+    Hour=pd.DataFrame(Hour)
+    Minutes=pd.DataFrame(Minutes)
+    Uniqueday=pd.DataFrame(Uniqueday)
+
+    Dataset = pd.concat([Speed_clean, Direction_clean,Time_clean,Days,Months,Year,Hour,Minutes,Uniqueday], axis=1)
+    Dataset.columns = titles
+
+    for line in range(len(Month_list)):
+
+        plt.close()
+        from windrose import WindroseAxes
+        Years = [2015,2016,2017,2018,2019,2020,2021,2022,2023]
+        Month_list = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+
+        newpath = "documents/Met_Names/" + name 
+        if not os.path.exists(newpath):
+            os.makedirs(newpath)
+
+
+        data_segment = Dataset
+        data_segment = (data_segment.loc[(Dataset['Months'] == line+1) & (Dataset['Hour'] >= 7) & (Dataset['Hour'] <= 18)])
+
+        theta = data_segment["Direction_clean"]
+        speed = data_segment["Speed_clean"]
+        
+
+        ax = WindroseAxes.from_ax()                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+        ax.bar(theta, speed , normed=True)
+
+        plt.title(Month_list[line]+" "+name)
+        ax.set_legend().set_title("Wind Speed (MPH)")
+        ax.set_yticks(np.linspace(ax.get_yticks()[0], ax.get_yticks()[-1], len(ax.get_yticks())))
+        ax.set_yticklabels(["{:.0f}%".format(y) for y in ax.get_yticks()],size = 25,color = "black")
+
+
+
+        plt.savefig("documents/Met_Names/" + name+"/"+Month_list[line]+"_"+name+".png") 
+
+        plt.show()
+        plt.close()
+
