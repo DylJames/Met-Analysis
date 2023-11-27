@@ -3,7 +3,7 @@ This code utilizes public data for meteorology analysis.
 
 Free-Available met station data for NC can be accessed at https://mesonet.agron.iastate.edu/request/download.phtml?network=NC_ASOS
 
-The following code was ran to create the following graphs:                      
+The following python code was ran to create the following types of graphs:                      
 
 
 ![image](https://github.com/DylJames/Met-Analysis/assets/152208291/bf874b9e-00ae-4ff5-b944-98c9a0a784a9)
