@@ -1,0 +1,152 @@
+import numpy as np
+import pandas as pd
+import csv
+from datetime import datetime
+import datetime
+from matplotlib import pyplot as plt
+
+Data = pd.read_csv("HFF.csv")
+
+Speed = np.array(Data["sped"])
+Direction = np.array(Data["drct"]) 
+Time = np.array(Data["valid"]) 
+A,B,C = 0,0,0
+Speed_clean = []
+Direction_clean = []
+Time_clean = []
+x = 0
+y = 0
+
+
+for line in range(len(Speed)):
+    try :
+        A = float(Speed[line].replace("'", ''))
+        B = float(Direction[line].replace("'", '')) 
+        C = str(Time[line])
+    
+#         Speed_clean.append(A)
+#         Direction_clean.append(B)
+#         Time_clean.append(C)
+    except:
+        
+#         print(Speed[line],Direction[line])
+        A = np.nan
+        B = np.nan
+        C = np.nan
+    
+    if A > 0:
+        Speed_clean.append(A)
+        Direction_clean.append(B)
+        Time_clean.append(C)
+    else:
+        x = x + 1
+
+Days = [] 
+Months = []
+Year = []
+Hour = []
+Minutes = []
+Uniqueday = []
+for line in Time_clean:
+    dateobj = datetime.datetime.strptime(str(line), "%Y-%m-%d %H:%M")
+    Days.append(dateobj.day)
+    Months.append(dateobj.month)
+    Year.append(dateobj.year)
+    Hour.append(dateobj.hour)
+    Minutes.append(dateobj.minute)
+    Uniqueday.append(str(dateobj.day)+str(dateobj.year))
+
+print(len(Days))
+
+import pandas as pd
+titles=['Speed_clean','Direction_clean','Time_clean','Days','Months','Year','Hour',"Minutes","Uniqueday"]
+C=[Speed_clean,Direction_clean,Time_clean,Days,Months,Year,Hour,Minutes,Uniqueday]
+
+
+Speed_clean=pd.DataFrame(Speed_clean)
+Direction_clean=pd.DataFrame(Direction_clean)
+Time_clean=pd.DataFrame(Time_clean)
+Days=pd.DataFrame(Days)
+Months=pd.DataFrame(Months)
+Year=pd.DataFrame(Year)
+Hour=pd.DataFrame(Hour)
+Minutes=pd.DataFrame(Minutes)
+Uniqueday=pd.DataFrame(Uniqueday)
+
+Dataset = pd.concat([Speed_clean, Direction_clean,Time_clean,Days,Months,Year,Hour,Minutes,Uniqueday], axis=1)
+Dataset.columns = titles
+
+plt.close()
+from windrose import WindroseAxes
+Years = [2019,2020,2021,2022]
+Month_list = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+
+for line2 in range(len(Years)):
+    for line in range(len(Month_list)):
+
+        data_segment = Dataset
+        data_segment = (data_segment.loc[(Dataset['Months'] == line+1)])
+        
+        
+        theta = data_segment["Direction_clean"]
+        speed = data_segment["Speed_clean"]
+        
+        
+        
+        
+        print(len(speed),len(theta))
+        
+        ax = WindroseAxes.from_ax()                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+        ax.bar(theta, speed , normed=True)
+    
+        plt.title(Month_list[line]+" "+str(Years[line2])+" Hoffman")
+        ax.set_legend().set_title("Wind Speed (MPH)")
+        ax.set_yticks(np.linspace(ax.get_yticks()[0], ax.get_yticks()[-1], len(ax.get_yticks())))
+        ax.set_yticklabels(["{:.0f}%".format(y) for y in ax.get_yticks()],size = 25,color = "black")
+
+        
+        
+        
+        plt.show()
+        plt.close()
+
+
+
+
+
+
+
+
+
+for month in range(len(Month_list)):
+    fig, axs = plt.subplots(nrows=4, ncols=6, figsize=(20, 18),subplot_kw = dict(polar = True))
+    plt.subplots_adjust(hspace=0.5)
+    fig.suptitle(Month_list[month], fontsize=18, y=0.95)
+
+
+    hours = range(24)
+    # loop through tickers and axes
+    for hour, ax in zip(hours, axs.ravel()):
+        # filter df for ticker and plot on specified axes
+        data_segment = (Dataset.loc[(Dataset['Months'] == month+1)&(Dataset['Hour'] == hour)])    
+
+        # chart formatting
+
+        theta = np.array(data_segment["Direction_clean"]) / 360 * 2 * 3.141
+
+        wiggle_degree = np.random.rand(len(theta)) * .2
+        wiggle_speed = np.random.rand(len(theta)) *.8
+
+        r = np.array(data_segment["Speed_clean"])+wiggle_speed
+        colors = data_segment["Hour"]
+        ax.scatter(theta + wiggle_degree, r, c="black", s=3, alpha=1)
+        ax.set_theta_zero_location('N')
+        ax.set_theta_direction(-1)
+        ax.set_title("Hour " + str(hour))
+
+
+    plt.tight_layout()  
+    plt.show()
+
+
+
