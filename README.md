@@ -6,7 +6,8 @@ Free-Available met station data for NC can be accessed at https://mesonet.agron.
 The following python code was ran to create the following types of graphs:                      
 
 
-![image](https://github.com/DylJames/Met-Analysis/assets/152208291/bf874b9e-00ae-4ff5-b944-98c9a0a784a9)
+![image](https://github.com/DylJames/Met-Analysis/assets/152208291/be8cb7bd-9530-4493-b358-e0275fca3df0)
+
 
  
 ![image](https://github.com/DylJames/Met-Analysis/assets/152208291/29f5a863-d9be-49c5-a124-0941199e4d44)
